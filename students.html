@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ประเมินคุณลักษณะฯ - รายชื่อนักเรียน</title>
+    <title>ประเมินคุณลักษณะอันพึงประสงค์</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -32,7 +32,7 @@
                 <button onclick="handleLogout()" class="text-[10px] font-bold bg-white text-blue-700 px-3 py-1.5 rounded-full shadow hover:bg-blue-50 transition">ออกจากระบบ</button>
             </div>
             <div class="mt-4 bg-white bg-opacity-20 p-3 rounded-xl border border-white border-opacity-30 backdrop-blur-sm text-center">
-                <h2 class="text-lg font-bold">บันทึกการประเมินคุณลักษณะฯ</h2>
+                <h2 class="text-lg font-bold">บันทึกการประเมินคุณลักษณะอันพึงประสงค?</h2>
             </div>
         </div>
 
@@ -240,8 +240,8 @@
 
                     <div class="bg-gray-50 rounded-xl p-2.5 border border-gray-100 flex flex-col gap-1.5 px-3 mb-3">
                         <div class="flex justify-between items-center text-[11px] text-gray-500">
-                            <span>คุณลักษณะ (ฐานนิยม): <span id="mode1_${student.sid}" class="font-bold text-gray-800">${student.mode_part1 || '-'}</span></span>
-                            <span>อัตลักษณ์ (ฐานนิยม): <span id="mode2_${student.sid}" class="font-bold text-gray-800">${student.mode_part2 || '-'}</span></span>
+                            <span>คุณลักษณะฯ : <span id="mode1_${student.sid}" class="font-bold text-gray-800">${student.mode_part1 || '-'}</span></span>
+                            <span>อัตลักษณ์นักเรียน : <span id="mode2_${student.sid}" class="font-bold text-gray-800">${student.mode_part2 || '-'}</span></span>
                         </div>
                         <div class="flex justify-between items-center text-xs border-t pt-1.5 mt-0.5">
                             <div class="font-bold text-gray-600">สรุปผลประเมินรวม:</div>
