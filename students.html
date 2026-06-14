@@ -494,6 +494,42 @@
             localStorage.removeItem("charAssessUser");
             window.location.href = 'index.html';
         }
+
+
+        async function handleToggleOverride() {
+            const toggle = document.getElementById('overrideToggle');
+            const state = toggle.checked;
+            toggle.disabled = true;
+            
+            try {
+                const res = await fetch(GAS_WEB_APP_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: "toggleOverride", teacherName: globalTeacherName, state: state }),
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+                });
+                const result = await res.json();
+                
+                if (result.status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: state ? 'เปิดระบบสำเร็จ' : 'ปิดระบบสำเร็จ',
+                        text: state ? 'ผู้ใช้ทุกคนสามารถประเมินได้ทันที' : 'ระบบกลับสู่โหมดเวลาปกติ',
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        fetchStudents(); // รีโหลดข้อมูลเพื่อปลดล็อกฟอร์ม
+                    });
+                } else {
+                    Swal.fire('ข้อผิดพลาด', result.message, 'error');
+                    toggle.checked = !state;
+                }
+            } catch(e) {
+                Swal.fire('Error', 'ไม่สามารถเชื่อมต่อได้', 'error');
+                toggle.checked = !state;
+            } finally {
+                toggle.disabled = false;
+            }
+        }
     </script>
 </body>
 </html>
