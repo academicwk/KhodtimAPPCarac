@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dashboard ประเมินคุณลักษณะฯ</title>
+    <title>Dashboard คุณลักษณะอันพึงประสงค์และอัตลักษณ์นักเรียน</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -13,11 +13,9 @@
         body { font-family: 'Sarabun', sans-serif; background-color: #f3f4f6; }
         .stat-card { background: white; border-radius: 1rem; padding: 1.25rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border: 1px solid #f3f4f6; }
         .section-header { font-size: 1.125rem; font-weight: 700; color: #1e3a8a; border-bottom: 2px solid #e5e7eb; padding-bottom: 0.5rem; margin-bottom: 1rem; }
-        
-        /* สีกำหนดระดับการประเมิน */
-        .color-excellent { color: #16a34a; } .bg-excellent { background-color: #16a34a; } /* สีเขียว */
-        .color-good { color: #2563eb; } .bg-good { background-color: #2563eb; } /* สีน้ำเงิน */
-        .color-pass { color: #f59e0b; } .bg-pass { background-color: #f59e0b; } /* สีเหลือง/ส้ม */
+        .color-excellent { color: #16a34a; } .bg-excellent { background-color: #16a34a; } 
+        .color-good { color: #2563eb; } .bg-good { background-color: #2563eb; } 
+        .color-pass { color: #f59e0b; } .bg-pass { background-color: #f59e0b; } 
     </style>
 </head>
 <body class="pb-20 text-gray-800">
@@ -54,7 +52,6 @@
     <div class="max-w-5xl mx-auto px-4 space-y-6">
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- ส่วนเปอร์เซ็นต์ความคืบหน้า -->
             <div class="stat-card flex flex-col justify-center items-center text-center">
                 <h2 class="text-sm font-bold text-gray-500 uppercase mb-2">ความคืบหน้าการประเมิน</h2>
                 <div class="text-6xl font-black text-blue-600 mb-2" id="overallPercent">0%</div>
@@ -66,9 +63,8 @@
                 </div>
             </div>
 
-            <!-- ส่วนกราฟวงกลมภาพรวม -->
             <div class="stat-card">
-                <h2 class="text-sm font-bold text-gray-500 uppercase text-center mb-4">ผลการประเมิน (ภาพรวม)</h2>
+                <h2 class="text-sm font-bold text-gray-500 uppercase text-center mb-4">สรุปผลการประเมิน (ภาพรวม)</h2>
                 <div class="relative h-48 w-full mb-4">
                     <canvas id="overallPieChart"></canvas>
                 </div>
@@ -76,17 +72,31 @@
             </div>
         </div>
 
-        <!-- กราฟแท่งเปรียบเทียบเพศ -->
         <div class="stat-card">
-            <h2 class="section-header"><i class="fa-solid fa-venus-mars"></i> เปรียบเทียบระดับคุณภาพแยกตามเพศ</h2>
-            <div class="relative h-64 w-full">
-                <canvas id="genderBarChart"></canvas>
+            <h2 class="section-header"><i class="fa-solid fa-chart-bar"></i> ส่วนที่ 1: คุณลักษณะอันพึงประสงค์ 8 ด้าน</h2>
+            <div class="relative h-72 w-full">
+                <canvas id="part1BarChart"></canvas>
             </div>
         </div>
 
-        <!-- ตารางสรุปแยกตามห้องเรียน -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="stat-card">
+                <h2 class="section-header"><i class="fa-solid fa-id-badge"></i> ส่วนที่ 2: อัตลักษณ์นักเรียน 3 ข้อ</h2>
+                <div class="relative h-64 w-full">
+                    <canvas id="part2BarChart"></canvas>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <h2 class="section-header"><i class="fa-solid fa-venus-mars"></i> เปรียบเทียบภาพรวมแยกตามเพศ</h2>
+                <div class="relative h-64 w-full">
+                    <canvas id="genderBarChart"></canvas>
+                </div>
+            </div>
+        </div>
+
         <div class="stat-card">
-            <h2 class="section-header"><i class="fa-solid fa-school"></i> สรุปข้อมูลจำแนกตามห้องเรียน</h2>
+            <h2 class="section-header"><i class="fa-solid fa-school"></i> สรุปข้อมูลจำแนกตามห้องเรียน (ภาพรวม)</h2>
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left whitespace-nowrap">
                     <thead class="text-xs text-gray-700 uppercase bg-blue-50 border-b-2 border-blue-200">
@@ -98,9 +108,7 @@
                             <th class="px-4 py-3 text-center rounded-tr-lg"><span class="bg-pass text-white px-2 py-0.5 rounded text-[10px]">ผ่าน</span></th>
                         </tr>
                     </thead>
-                    <tbody id="roomTableBody" class="divide-y divide-gray-100">
-                        <!-- แถวข้อมูลถูกสร้างด้วย JS -->
-                    </tbody>
+                    <tbody id="roomTableBody" class="divide-y divide-gray-100"></tbody>
                 </table>
             </div>
         </div>
@@ -108,11 +116,14 @@
     </div>
 
     <script>
-        // 🔴 อย่าลืมเปลี่ยน URL เป็นอันปัจจุบันของคุณ 🔴
-        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwrERAn8x9CKmnds_ddtggHwhdjfiGFXssmT4Qs0o5v8e5oShlDetvQyycJpQtFJrIpZw/exec"; 
+        // 🔴 เปลี่ยน URL ตรงนี้ให้เป็น Web App ของคุณ 🔴
+        const GAS_WEB_APP_URL = "YOUR_NEW_GAS_WEB_APP_URL_HERE"; 
         
         let pieChartInstance = null;
         let barChartInstance = null;
+        let part1ChartInstance = null;
+        let part2ChartInstance = null;
+        
         const statusColors = ['#16a34a', '#2563eb', '#f59e0b']; // เขียว(ดีเยี่ยม), น้ำเงิน(ดี), เหลือง(ผ่าน)
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -145,6 +156,8 @@
                 if (result.status === 'success') {
                     renderOverall(result);
                     renderGenderBarChart(result.genderStatus);
+                    renderPart1Chart(result.aspectStats);
+                    renderPart2Chart(result.aspectStats);
                     renderRoomTable(result.roomStats);
                 } else {
                     Swal.fire('ข้อผิดพลาด', result.message, 'error');
@@ -171,19 +184,9 @@
                 type: 'doughnut',
                 data: {
                     labels: ['ดีเยี่ยม', 'ดี', 'ผ่าน'],
-                    datasets: [{
-                        data: dataset,
-                        backgroundColor: statusColors,
-                        borderWidth: 2,
-                        borderColor: '#ffffff'
-                    }]
+                    datasets: [{ data: dataset, backgroundColor: statusColors, borderWidth: 2, borderColor: '#ffffff' }]
                 },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    cutout: '65%',
-                    animation: { animateScale: true }
-                }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, cutout: '65%' }
             });
 
             const calcP = (val) => data.recordedTotal > 0 ? Math.round((val/data.recordedTotal)*100) : 0;
@@ -192,6 +195,64 @@
                 <div class="flex items-center"><div class="w-3 h-3 bg-good rounded-full mr-1"></div>ดี: ${dataset[1]} (${calcP(dataset[1])}%)</div>
                 <div class="flex items-center"><div class="w-3 h-3 bg-pass rounded-full mr-1"></div>ผ่าน: ${dataset[2]} (${calcP(dataset[2])}%)</div>
             `;
+        }
+
+        function renderPart1Chart(aspectStats) {
+            const ctx = document.getElementById('part1BarChart').getContext('2d');
+            if(part1ChartInstance) part1ChartInstance.destroy();
+
+            const labels = ['1.รักชาติฯ', '2.ซื่อสัตย์', '3.มีวินัย', '4.ใฝ่เรียนรู้', '5.พอเพียง', '6.มุ่งมั่น', '7.รักความเป็นไทย', '8.จิตสาธารณะ'];
+            const aspects = ['a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8'];
+            
+            const dataExcellent = aspects.map(a => aspectStats[a]["ดีเยี่ยม"]);
+            const dataGood = aspects.map(a => aspectStats[a]["ดี"]);
+            const dataPass = aspects.map(a => aspectStats[a]["ผ่าน"]);
+
+            part1ChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'ดีเยี่ยม', data: dataExcellent, backgroundColor: '#16a34a', borderRadius: 4 },
+                        { label: 'ดี', data: dataGood, backgroundColor: '#2563eb', borderRadius: 4 },
+                        { label: 'ผ่าน', data: dataPass, backgroundColor: '#f59e0b', borderRadius: 4 }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { position: 'top', labels: { font: { family: 'Sarabun' } } } },
+                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } }, x: { grid: { display: false } } }
+                }
+            });
+        }
+
+        function renderPart2Chart(aspectStats) {
+            const ctx = document.getElementById('part2BarChart').getContext('2d');
+            if(part2ChartInstance) part2ChartInstance.destroy();
+
+            const labels = ['1.การไหว้', '2.การแต่งกาย', '3.ระเบียบแถว'];
+            const aspects = ['id1', 'id2', 'id3'];
+            
+            const dataExcellent = aspects.map(a => aspectStats[a]["ดีเยี่ยม"]);
+            const dataGood = aspects.map(a => aspectStats[a]["ดี"]);
+            const dataPass = aspects.map(a => aspectStats[a]["ผ่าน"]);
+
+            part2ChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'ดีเยี่ยม', data: dataExcellent, backgroundColor: '#16a34a', borderRadius: 4 },
+                        { label: 'ดี', data: dataGood, backgroundColor: '#2563eb', borderRadius: 4 },
+                        { label: 'ผ่าน', data: dataPass, backgroundColor: '#f59e0b', borderRadius: 4 }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } }, x: { grid: { display: false } } }
+                }
+            });
         }
 
         function renderGenderBarChart(genderData) {
@@ -207,19 +268,14 @@
                 data: {
                     labels: labels,
                     datasets: [
-                        { label: 'นักเรียนชาย', data: maleData, backgroundColor: '#60a5fa', borderRadius: 4 }, // สีฟ้า
-                        { label: 'นักเรียนหญิง', data: femaleData, backgroundColor: '#f472b6', borderRadius: 4 } // สีชมพู
+                        { label: 'นักเรียนชาย', data: maleData, backgroundColor: '#60a5fa', borderRadius: 4 },
+                        { label: 'นักเรียนหญิง', data: femaleData, backgroundColor: '#f472b6', borderRadius: 4 }
                     ]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'top', labels: { font: { family: 'Sarabun', weight: 'bold' } } }
-                    },
-                    scales: {
-                        y: { beginAtZero: true, ticks: { stepSize: 1 } },
-                        x: { grid: { display: false } }
-                    }
+                    plugins: { legend: { position: 'top', labels: { font: { family: 'Sarabun' } } } },
+                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } }, x: { grid: { display: false } } }
                 }
             });
         }
@@ -228,7 +284,6 @@
             const tbody = document.getElementById('roomTableBody');
             tbody.innerHTML = '';
             
-            // ใช้เทคนิค sort ให้ห้อง อ. มาก่อน ป. ตามด้วย ม.
             const sortedRooms = Object.keys(roomStats).sort((a, b) => {
                 const order = { 'อ': 1, 'ป': 2, 'ม': 3 };
                 const aLevel = order[a.charAt(0)] || 99;
