@@ -39,7 +39,7 @@
                 <p class="text-sm font-bold"><i class="fa-solid fa-lock text-amber-600"></i> โหมดอ่านอย่างเดียว</p>
                 <p class="text-xs mt-1">ระบบอยู่นอกช่วงเวลาเปิดรับข้อมูล</p>
             </div>
-        <div id="adminPanel" class="hidden px-4 mt-3">
+        </div> <div id="adminPanel" class="hidden px-4 mt-3">
             <div class="bg-purple-100 border border-purple-300 p-3 rounded-xl shadow-sm flex justify-between items-center">
                 <div>
                     <p class="text-sm font-bold text-purple-800"><i class="fa-solid fa-unlock-keyhole"></i> เปิดระบบกรณีพิเศษ</p>
@@ -50,7 +50,6 @@
                     <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
                 </label>
             </div>
-        </div>    
         </div>
 
         <div class="px-4 mt-3 relative z-20">
@@ -169,7 +168,7 @@
                     }
 
                     renderStudentList(result.data); 
-                }                } 
+                }                
                 else { Swal.fire('ข้อผิดพลาด', result.message, 'error'); }
             }).catch(err => { container.innerHTML = `<div class="bg-red-50 text-red-500 p-4 rounded-xl text-center text-sm font-bold">เชื่อมต่อล้มเหลว</div>`; });
         }
