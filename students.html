@@ -37,9 +37,11 @@
         <div id="readonlyBanner" class="hidden px-4 mt-3">
             <div class="bg-amber-100 border border-amber-300 text-amber-800 p-3 rounded-xl shadow-sm text-center">
                 <p class="text-sm font-bold"><i class="fa-solid fa-lock text-amber-600"></i> โหมดอ่านอย่างเดียว</p>
-                <p class="text-xs mt-1">ระบบอยู่นอกช่วงเวลาเปิดรับข้อมูล</p>
+                <p id="readonlyText" class="text-xs mt-1">ระบบอยู่นอกช่วงเวลาเปิดรับข้อมูล</p>
             </div>
-        </div> <div id="adminPanel" class="hidden px-4 mt-3">
+        </div> 
+
+        <div id="adminPanel" class="hidden px-4 mt-3 space-y-2">
             <div class="bg-purple-100 border border-purple-300 p-3 rounded-xl shadow-sm flex justify-between items-center">
                 <div>
                     <p class="text-sm font-bold text-purple-800"><i class="fa-solid fa-unlock-keyhole"></i> เปิดระบบกรณีพิเศษ</p>
@@ -50,13 +52,24 @@
                     <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
                 </label>
             </div>
+
+            <div class="bg-indigo-50 border border-indigo-200 p-3 rounded-xl shadow-sm flex justify-between items-center">
+                <div>
+                    <p class="text-sm font-bold text-indigo-800"><i class="fa-solid fa-calendar-day"></i> วันเปิดระบบ (อัตโนมัติ)</p>
+                    <p class="text-[10px] text-indigo-600">ตั้งแต่วันที่ระบุ จนถึงสิ้นเดือน</p>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <input type="number" id="openDayInput" min="1" max="31" class="w-14 px-1 py-1.5 border border-indigo-300 rounded-lg text-center text-sm font-bold text-indigo-900 focus:outline-none focus:border-indigo-600 shadow-inner">
+                    <button onclick="saveOpenDay()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm">บันทึก</button>
+                </div>
+            </div>
         </div>
 
         <div class="px-4 mt-3 relative z-20">
             <div class="bg-white p-4 rounded-2xl shadow border border-gray-100 text-center">
                 <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wide">ความคืบหน้าการบันทึกข้อมูล</p>
                 <div class="my-1 flex items-baseline justify-center space-x-2">
-                    <span id="progressPercent" class="text-5xl font-black text-blue-600 tracking-tighter">0%</span>
+                    <span id="progressPercent" class="text-5xl font-black text-blue-600 tracking-tighter">0.00%</span>
                 </div>
                 <p class="text-[11px] font-medium text-gray-500 mb-3 border-b border-gray-50 pb-3">
                     ประเมินแล้ว <span id="recordedCount" class="font-bold text-gray-800 text-sm">0</span> จาก <span id="totalCount" class="font-bold text-gray-800 text-sm">0</span> คน
@@ -84,7 +97,6 @@
     </div>
 
     <script>
-        // 🔴 อย่าลืมเปลี่ยน URL ตรงนี้เป็นของ Web App ตัวใหม่ 🔴
         const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwrERAn8x9CKmnds_ddtggHwhdjfiGFXssmT4Qs0o5v8e5oShlDetvQyycJpQtFJrIpZw/exec";
         
         let globalTeacherRoom = "";
@@ -151,26 +163,31 @@
             .then(res => res.json())
             .then(result => {
                 if (result.status === 'success') { 
-                    // ตรวจสอบสิทธิ์แอดมิน
                     if (globalTeacherName === "นายพีระศิน ไชยศร") {
                         document.getElementById('adminPanel').classList.remove('hidden');
                         document.getElementById('overrideToggle').checked = result.override;
+                        document.getElementById('openDayInput').value = result.openDay;
                     }
 
-                    // เงื่อนไขเปิดระบบ: วันที่ 16 ถึงสิ้นเดือน หรือ แอดมินเปิดระบบพิเศษ
                     const today = new Date().getDate();
-                    if (today < 16 && !result.override) {
+                    const sysOpenDay = result.openDay || 16;
+
+                    if (today < sysOpenDay && !result.override) {
                         isReadOnly = true;
                         document.getElementById('readonlyBanner').classList.remove('hidden');
+                        document.getElementById('readonlyText').innerText = `ระบบเปิดรับข้อมูลตั้งแต่วันที่ ${sysOpenDay} ถึงสิ้นเดือน`;
                     } else {
                         isReadOnly = false;
                         document.getElementById('readonlyBanner').classList.add('hidden');
                     }
 
                     renderStudentList(result.data); 
-                }                
-                else { Swal.fire('ข้อผิดพลาด', result.message, 'error'); }
-            }).catch(err => { container.innerHTML = `<div class="bg-red-50 text-red-500 p-4 rounded-xl text-center text-sm font-bold">เชื่อมต่อล้มเหลว</div>`; });
+                } else { 
+                    Swal.fire('ข้อผิดพลาด', result.message, 'error'); 
+                }
+            }).catch(err => { 
+                container.innerHTML = `<div class="bg-red-50 text-red-500 p-4 rounded-xl text-center text-sm font-bold">เชื่อมต่อล้มเหลว</div>`; 
+            });
         }
 
         function updateProgress(students) {
@@ -321,7 +338,6 @@
             previewAssessmentSummary(sid);
         }
 
-        // ปุ่มอำนวยความสะดวกสำหรับกดเลือก ดีเยี่ยม ทั้งหมวด
         function massSelect(sid, groupPrefix) {
             EVAL_ITEMS.forEach(item => {
                 if (item.group.startsWith(groupPrefix)) {
@@ -419,7 +435,7 @@
                         btn.classList.remove('bg-green-500');
                         btn.classList.add('bg-blue-600', 'hover:bg-blue-700');
                         btn.innerHTML = '<i class="fa-solid fa-save"></i> บันทึกผลการประเมินรายบุคคล';
-                        toggleEvalForm(sid); // พับเก็บให้เมื่อบันทึกเสร็จ
+                        toggleEvalForm(sid); 
                     }, 1500);
                     
                     const total = document.getElementById('totalCount').innerText;
@@ -494,7 +510,6 @@
             window.location.href = 'index.html';
         }
 
-
         async function handleToggleOverride() {
             const toggle = document.getElementById('overrideToggle');
             const state = toggle.checked;
@@ -516,7 +531,7 @@
                         timer: 1500,
                         showConfirmButton: false
                     }).then(() => {
-                        fetchStudents(); // รีโหลดข้อมูลเพื่อปลดล็อกฟอร์ม
+                        fetchStudents(); 
                     });
                 } else {
                     Swal.fire('ข้อผิดพลาด', result.message, 'error');
@@ -527,6 +542,39 @@
                 toggle.checked = !state;
             } finally {
                 toggle.disabled = false;
+            }
+        }
+
+        async function saveOpenDay() {
+            const dayInput = document.getElementById('openDayInput').value;
+            if (!dayInput || dayInput < 1 || dayInput > 31) {
+                Swal.fire('แจ้งเตือน', 'กรุณาระบุวันที่ระหว่าง 1-31', 'warning');
+                return;
+            }
+            
+            try {
+                const res = await fetch(GAS_WEB_APP_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: "setOpenDay", teacherName: globalTeacherName, day: parseInt(dayInput) }),
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+                });
+                const result = await res.json();
+                
+                if (result.status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'บันทึกสำเร็จ',
+                        text: `กำหนดวันเปิดระบบเป็นวันที่ ${dayInput} เรียบร้อยแล้ว`,
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        fetchStudents(); 
+                    });
+                } else {
+                    Swal.fire('ข้อผิดพลาด', result.message, 'error');
+                }
+            } catch(e) {
+                Swal.fire('Error', 'ไม่สามารถเชื่อมต่อได้', 'error');
             }
         }
     </script>
