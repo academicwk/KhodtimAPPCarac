@@ -168,11 +168,12 @@
         }
 
         function renderOverall(data) {
-            const percent = data.totalStudents > 0 ? Math.round((data.recordedTotal / data.totalStudents) * 100) : 0;
+            const percent = data.totalStudents > 0 ? ((data.recordedTotal / data.totalStudents) * 100).toFixed(2) : "0.00";
             document.getElementById('overallPercent').innerText = percent + "%";
             document.getElementById('overallRecorded').innerText = data.recordedTotal;
             document.getElementById('overallTotal').innerText = data.totalStudents;
             document.getElementById('overallProgressBar').style.width = percent + "%";
+
 
             const stats = data.overallStatus;
             const dataset = [stats["ดีเยี่ยม"], stats["ดี"], stats["ผ่าน"]];
@@ -294,8 +295,9 @@
 
             sortedRooms.forEach(room => {
                 const stat = roomStats[room];
-                const percent = stat.total > 0 ? Math.round((stat.recorded / stat.total) * 100) : 0;
+                const percent = stat.total > 0 ? ((stat.recorded / stat.total) * 100).toFixed(2) : "0.00";
                 const status = stat.status;
+                const percentVal = parseFloat(percent); // แปลงกลับเป็นตัวเลขเพื่อเช็คเงื่อนไขสีเขียว
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -303,7 +305,7 @@
                     <td class="px-4 py-3 text-center">
                         <div class="flex items-center justify-center gap-2" title="${stat.recorded} / ${stat.total} คน">
                             <div class="w-16 bg-gray-200 rounded-full h-2 overflow-hidden"><div class="bg-blue-500 h-full" style="width: ${percent}%"></div></div>
-                            <span class="text-xs font-bold ${percent === 100 ? 'text-green-600' : 'text-gray-500'}">${percent}%</span>
+                            <span class="text-xs font-bold ${percentVal === 100 ? 'text-green-600' : 'text-gray-500'}">${percent}%</span>
                         </div>
                     </td>
                     <td class="px-4 py-3 text-center font-bold color-excellent">${status["ดีเยี่ยม"] > 0 ? status["ดีเยี่ยม"] : '-'}</td>
