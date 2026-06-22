@@ -176,7 +176,7 @@
         function updateProgress(students) {
             const total = students.length;
             const recorded = students.filter(s => s.isRecorded).length; 
-            const percent = total > 0 ? Math.round((recorded / total) * 100) : 0;
+            const percent = total > 0 ? ((recorded / total) * 100).toFixed(2) : "0.00";
 
             document.getElementById('totalCount').innerText = total;
             document.getElementById('recordedCount').innerText = recorded;
@@ -424,7 +424,7 @@
                     
                     const total = document.getElementById('totalCount').innerText;
                     const greenCards = document.querySelectorAll('.border-green-400').length;
-                    const newPercent = Math.round((greenCards / total) * 100);
+                    const newPercent = ((greenCards / total) * 100).toFixed(2);
                     
                     document.getElementById('recordedCount').innerText = greenCards;
                     document.getElementById('progressPercent').innerText = newPercent + "%";
